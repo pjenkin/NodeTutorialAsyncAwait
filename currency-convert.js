@@ -56,11 +56,20 @@ const convertCurrency = (from, to, amount) =>
 // compare / contrast - async/await version
 const getExchangeRateAsync = async (from, to) =>
 {
-  const response = await axios.get('http://data.fixer.io/api/latest?access_key=d1b90095d0b20832def727c348206e98');
-  const euro = 1 / response.data.rates[from];
-  const rate = euro * response.data.rates[to];
-  return rate;
-    // fixer euro as default stadard currency
+  try {
+    const response = await axios.get('http://data.fixer.io/api/latest?access_key=d1b90095d0b20832def727c348206e98');
+    const euro = 1 / response.data.rates[from];
+    const rate = euro * response.data.rates[to];
+    // fixer euro as default standard currency
+
+    if (isNaN(rate))
+    {
+      throw new Error();
+    }
+    return rate;
+  } catch (e) {
+    throw new Error(`Unable to get exchange rate for ${from} and ${to}.`)
+  }
 };
 
 
@@ -68,8 +77,15 @@ const getExchangeRateAsync = async (from, to) =>
 // compare / contrast - async/await version
 const getCountriesAsync = async (currencyCode) =>
 {
-  const response = await axios.get(`https://restcountries.eu/rest/v2/currency/${currencyCode}`);
-  return response.data.map((country)=> country.name);     // ES6 arrow abbreviation
+  try
+  {
+    const response = await axios.get(`https://restcountries.eu/rest/v2/currency/${currencyCode}`);
+    return response.data.map((country)=> country.name);     // ES6 arrow abbreviation
+  }
+  catch (e)
+  {
+    throw new Error(`Unable to get countries which d'use ${currencyCode}`);
+  }
 };
 
 
@@ -77,15 +93,31 @@ const getCountriesAsync = async (currencyCode) =>
 // compare / contrast - async/await version
 const convertCurrencyAsync = async (from, to, amount) =>
 {
-  let rate = await getExchangeRate(from, to);
+  let rate = await getExchangeRateAsync(from, to);
   convertedAmount = (amount * rate).toFixed(2);
 
-  let countries = await getCountries(to);
+  let countries = await getCountriesAsync(to);
 
   return `${amount} ${from} is worth ${convertedAmount} ${to}. You can spend this in the following countries: ${countries.join(', ')}`;
 }
 
 
+// example 10-133
+// const doWork = async() => { return 10;}
+// const doWork = async() => { return myNumbers;}
+// const doWork = async() => { const result = await add(12,13); return result;}
+const doWork = async() =>
+{
+  try {
+   const result = await add(12,13); return result;}
+   catch (error)
+   {
+     return '10: default';
+   }
+ };
+
+// const add = async (a, b) => a + b;    // ES6 arrow abbreviation
+const add = async (a, b) => a + b + c;    // ES6 arrow abbreviation
 // --------------------------------------
 // getExchangeRate('USD','CAD').then((rate) =>
 // {
@@ -110,4 +142,10 @@ console.log('non-async/await');
 convertCurrency('USD','EUR',20).then((message) => {console.log(message)});
 console.log('-------------------------------');   // interesting - this will print before both async methods' outputs (both promise based and async/await)
 console.log('async/await');                       // interesting - this will print before both async methods' outputs (both promise based and async/await)
-convertCurrencyAsync('USD','EUR',20).then((message) => {console.log(message)});
+// convertCurrencyAsync('USD','EUR',20).then((message) => {console.log(message)});
+convertCurrencyAsync('USD','CAD',20).then((message) => {console.log(message)}).catch((error) =>
+{
+  console.log(error.message);
+});
+
+doWork().then((data) => {console.log('doWork: ', data)}).catch((error) =>{ console.log('Something went wrong: ', error.message)});

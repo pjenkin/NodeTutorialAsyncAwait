@@ -333,8 +333,19 @@ map:   e.g. let namesArray = users.map((user) => user.name);     /* to get only 
     
 async/await as addition to promises
   return new Promise((resolve, reject) => {......});    // promise pattern for async-y stuff
-promise chain can give scope (e.g. need variable from then-1st when dealing with then-2nd - could use variable/let with scope to workaround, but... hmm)
-array.reduce d'reduce array to a single value, executing a function on array members in turn left-to-right (e.g. for summing array contents, before division by length for to average)   e.g.             average = grades.map((grade) => grade.grade).reduce((a,b) => (a, b) => {a + b}) / grades.length;
+promise chaining d'need a return at start
+promise chain can give scope problem as chained .then are at same level, so mutually out-of-scope (e.g. need variable from then-1st when dealing with then-2nd - could use variable/let with scope at higher/earlier level to workaround, but... hmm)
+array.reduce d'reduce array to a single value, executing a function on array members in turn left-to-right (e.g. for summing array contents (eg 1 field/property), before division by length for to average)   e.g.             average = grades.map((grade) => grade.grade).reduce((a,b) => (a, b) => {a + b}) / grades.length;
+
+const getStatusAlt = async (userId) => { return 'Mike'; }; will return Promise { 'Mike' } as if resolved  /* async/await will enable writing code in synchronous-like form, without then &c callbacks */ - this promise could be resolved with a .then , or rejected by throw new Error('This is an error for the promise'); and .catch
+async functions will return a promise 
+
+10-131 fixer.io   currencies // http://data.fixer.io/api/latest?access_key=d1b90095d0b20832def727c348206e98
+restcountries.eu - country info:   Full NameCode,List of codes,Currency,Language,Capital city,Calling code,Region,Regional Bloc
+https://restcountries.eu/rest/v2/all    https://restcountries.eu/rest/v2/currency/{currency}
+npm i axios --save     for HTTP request
+
+
 
 
 
