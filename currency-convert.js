@@ -32,6 +32,24 @@ const getCountries = (currencyCode) =>
   });
 };
 
+const convertCurrency = (from, to, amount) =>
+{
+  let convertedAmount;      // variable at higher scope so as to be available in both chained .then blocks
+  return getExchangeRate(from, to).then((rate) =>
+  {
+      // const convertedAmount = (amount * rate).toFixed(2);
+      convertedAmount = (amount * rate).toFixed(2);
+      console.log('convertedAmount',convertedAmount);
+      return getCountries(to);
+  }).then((countries) =>
+  {
+    console.log('countries: ',countries);
+    return `${amount} ${from} is worth ${convertedAmount} ${to}. You can spend this in the following countries: ${countries.join(', ')}`;
+  });
+};
+
+
+
 /// get exchange rate *from* and *to* different currencies
 // compare / contrast - async/await version
 const getExchangeRateAsync = async (from, to) =>
@@ -54,20 +72,23 @@ const getCountriesAsync = async (currencyCode) =>
 
 
 // --------------------------------------
-getExchangeRate('USD','CAD').then((rate) =>
-{
-  console.log('non-async/await', rate);
-});
+// getExchangeRate('USD','CAD').then((rate) =>
+// {
+//   console.log('non-async/await', rate);
+// });
+//
+// getExchangeRateAsync('USD','CAD').then((rate) =>
+// {
+//   console.log('await', rate);
+// });
+//
+// getCountries('EUR').then((countries) => {
+//   console.log(countries);
+// })
+//
+// getCountriesAsync('EUR').then((countries) => {
+//   console.log(countries);
+// })
 
-getExchangeRateAsync('USD','CAD').then((rate) =>
-{
-  console.log('await', rate);
-});
-
-getCountries('EUR').then((countries) => {
-  console.log(countries);
-})
-
-getCountriesAsync('EUR').then((countries) => {
-  console.log(countries);
-})
+// convertCurrency('USD','CAD',20);
+convertCurrency('USD','USD',20).then((message) => {console.log(message)});
