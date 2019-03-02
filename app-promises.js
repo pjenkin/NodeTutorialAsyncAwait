@@ -85,10 +85,28 @@ const getStatus = (userId) =>
       // executing a function on array members in turn left-to-right
       // (e.g. for summing array contents (eg 1 field/property), before division by length for to average)
 // console.log('average: ', average);
-      return `${user.name} has a ${average}% in the class`;
+      return `${user.name} has a ${average}% in the class (non-async/await)`;
     }
   });
 };
+
+/// using async/await, calculate for to return string '[name] has a [x]% average in the class'
+const getStatusAlt = async (userId) =>
+{
+  const user = await getUser(userId);
+  // async/await will enable writing code in synchronous-like form, without then &c callbacks
+  const grades = await getGrades(user.schoolId);
+  let average = 0;
+  average = grades.map((grade) => grade.grade).reduce((a, b) => a + b) / grades.length;
+  return `${user.name} has a ${average}% in the class (async/await)`;
+
+  console.log('user & grades: ', user, grades);
+  return 'Mike';
+};
+
+/*  -----------------------------------------------------
+//-----------------Exposition----------------------------
+-------------------------------------------------------*/
 
 getUser(2).then((user) =>
 {
@@ -102,6 +120,11 @@ getGrades(999).then((grades) =>
 }).catch((error) => {console.log(error)});
 
 getStatus(1).then((status) =>
+{
+  console.log(status);
+}).catch((error) => {console.log(error)});
+
+getStatusAlt(1).then((status) =>
 {
   console.log(status);
 }).catch((error) => {console.log(error)});
